@@ -3,6 +3,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <stdint.h>
+#include "Skeleton.h"
 
 class Model {
 	struct Vertex {
@@ -12,8 +13,11 @@ class Model {
 	size_t VertCount = 0;
 	uint32_t* Indices = nullptr;
 	size_t IndexCount = 0;
+	Skeleton* Skeletons = nullptr;
+	size_t SkeletonCount = 0;
 public:
 	Model(const char* filename);
+	~Model();
 };
 
 Model::Model(const char* filename)
@@ -25,6 +29,7 @@ Model::Model(const char* filename)
 	{
 		auto mesh = model->mMeshes[i];
 		VertCount += mesh->mNumVertices;
+		SkeletonCount += mesh->HasBones();
 		for (unsigned face_idx = 0; face_idx < mesh->mNumFaces; ++face_idx)
 		{
 			auto face = mesh->mFaces[face_idx];
@@ -34,9 +39,9 @@ Model::Model(const char* filename)
 
 	Vertices = (Vertex*)malloc(VertCount * sizeof(Vertex));
 	Indices = (uint32_t*)malloc(IndexCount * sizeof(uint32_t));
-
+	Skeletons = (Skeleton*)calloc(SkeletonCount, sizeof(Skeleton));
 	//Load Verts into Vertices
-	int offset = 0, indice_offset = 0;
+	int offset = 0, indice_offset = 0, skeleton_offset = 0;
 	for (unsigned mesh_idx = 0; mesh_idx < model->mNumMeshes; ++mesh_idx)
 	{
 		auto mesh = model->mMeshes[mesh_idx];
@@ -58,13 +63,25 @@ Model::Model(const char* filename)
 				indice_offset += 3;
 			}
 		if (mesh->HasBones())
+		{
+			Skeletons[skeleton_offset].bones = (Skeleton::Bone*)malloc(mesh->mNumBones * sizeof(Skeleton::Bone));
 			for (unsigned bone_idx = 0; bone_idx < mesh->mNumBones; ++bone_idx)
 			{
 				auto bone = mesh->mBones[bone_idx];
+				//bone->
 				printf("%s\n", bone->mName.C_Str());
 			}
+			++skeleton_offset;
+		}
 		offset += mesh->mNumVertices;
 	}
 
 	delete model;
+}
+
+Model::~Model()
+{
+	free(Vertices);
+	free(Indices);
+	free(Skeletons);
 }

@@ -47,5 +47,17 @@
     <ClInclude Include="lodepng.h">
       <Filter>Header Files\Loaders</Filter>
     </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mrvn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
